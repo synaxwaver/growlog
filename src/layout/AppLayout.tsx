@@ -35,6 +35,12 @@ export default function AppLayout() {
           <NavLink to="/log" className={linkClass}>
             Log
           </NavLink>
+          <NavLink to="/review" className={linkClass}>
+            Итог
+          </NavLink>
+          <NavLink to="/learning" className={linkClass}>
+            Обучение
+          </NavLink>
           <div className="ml-auto flex items-center gap-3">
             {timer && (
               <div className="flex items-center gap-1.5 rounded-full bg-emerald-50 px-3 py-1 text-xs font-medium text-emerald-700 dark:bg-emerald-950 dark:text-emerald-400">

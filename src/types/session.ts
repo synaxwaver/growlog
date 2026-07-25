@@ -10,4 +10,5 @@ export type Session = {
   goals: Goal[]
   note: string
   date: string
+  topicIds: string[]
 }

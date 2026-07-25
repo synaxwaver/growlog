@@ -73,7 +73,8 @@ function isSession(value: unknown): value is Session {
     Array.isArray(s.goals) &&
     s.goals.every(isGoal) &&
     typeof s.note === 'string' &&
-    typeof s.date === 'string'
+    typeof s.date === 'string' &&
+    (s.topicIds === undefined || (Array.isArray(s.topicIds) && s.topicIds.every((t) => typeof t === 'string')))
   )
 }
 
@@ -100,8 +101,10 @@ export async function importData(file: File): Promise<ImportResult> {
     throw new Error(INVALID_FILE_MESSAGE)
   }
 
+  const normalizedSessions = sessions.map((s) => ({ ...s, topicIds: s.topicIds ?? [] }))
+
   await db.activities.bulkPut(activities)
-  await db.sessions.bulkPut(sessions)
+  await db.sessions.bulkPut(normalizedSessions)
 
   return { activitiesCount: activities.length, sessionsCount: sessions.length }
 }
