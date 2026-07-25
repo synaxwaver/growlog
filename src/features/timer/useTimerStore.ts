@@ -22,7 +22,7 @@ function saveTimer(timer: RunningTimer | null) {
 
 type TimerState = {
   timer: RunningTimer | null
-  start: (activityName: string) => void
+  start: (activityName: string, activityId?: string | null) => void
   pause: () => void
   resume: () => void
   stop: () => void
@@ -31,8 +31,9 @@ type TimerState = {
 export const useTimerStore = create<TimerState>((set, get) => ({
   timer: loadTimer(),
 
-  start: (activityName) => {
+  start: (activityName, activityId = null) => {
     const timer: RunningTimer = {
+      activityId,
       activityName,
       startedAt: Date.now(),
       accumulatedSec: 0,
