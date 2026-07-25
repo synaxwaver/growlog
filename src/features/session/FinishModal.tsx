@@ -3,13 +3,11 @@ import { format } from 'date-fns'
 import { useTimerStore } from '../timer/useTimerStore'
 import { formatDuration } from '../timer/timerMath'
 import { useActivities } from '../activities/useActivities'
-import { useTopics } from '../learning/useTopics'
 import { db } from '../../db/db'
 import type { Goal } from '../../types/goal'
 import type { Session } from '../../types/session'
 import GoalEditor from './GoalEditor'
 import ModalShell from './ModalShell'
-import TopicAddForm from '../learning/TopicAddForm'
 
 type FinishModalProps = {
   elapsedSec: number
@@ -20,28 +18,15 @@ export default function FinishModal({ elapsedSec, onClose }: FinishModalProps) {
   const timer = useTimerStore((s) => s.timer)
   const stop = useTimerStore((s) => s.stop)
   const { activities, loading: activitiesLoading } = useActivities()
-  const { topics, addTopic } = useTopics(timer?.activityId ?? '')
   const [goals, setGoals] = useState<Goal[]>([])
   const [note, setNote] = useState('')
   const [pinActivity, setPinActivity] = useState(false)
-  const [selectedTopicIds, setSelectedTopicIds] = useState<string[]>([])
   const [saving, setSaving] = useState(false)
 
   if (!timer) return null
 
   const activity = activities.find((a) => a.id === timer.activityId)
   const alreadyPinned = activity?.pinned ?? false
-
-  const toggleTopic = (id: string) => {
-    setSelectedTopicIds((prev) =>
-      prev.includes(id) ? prev.filter((t) => t !== id) : [...prev, id],
-    )
-  }
-
-  const handleAddTopic = async (name: string) => {
-    const topic = await addTopic(name)
-    if (topic) setSelectedTopicIds((prev) => [...prev, topic.id])
-  }
 
   const handleSave = async () => {
     setSaving(true)
@@ -56,7 +41,6 @@ export default function FinishModal({ elapsedSec, onClose }: FinishModalProps) {
       goals,
       note,
       date: format(new Date(timer.startedAt), 'yyyy-MM-dd'),
-      topicIds: selectedTopicIds,
     }
     await db.sessions.add(session)
 
@@ -80,25 +64,6 @@ export default function FinishModal({ elapsedSec, onClose }: FinishModalProps) {
       <p className="mt-1 text-sm text-neutral-500 dark:text-neutral-400">
         Время: {formatDuration(elapsedSec)}
       </p>
-
-      {topics.length > 0 && (
-        <div className="mt-4 flex flex-col gap-2">
-          <span className="text-sm font-medium text-neutral-600 dark:text-neutral-400">
-            Над чем работал?
-          </span>
-          {topics.map((topic) => (
-            <label key={topic.id} className="flex items-center gap-2 text-sm">
-              <input
-                type="checkbox"
-                checked={selectedTopicIds.includes(topic.id)}
-                onChange={() => toggleTopic(topic.id)}
-              />
-              <span>{topic.name}</span>
-            </label>
-          ))}
-          <TopicAddForm onAdd={handleAddTopic} />
-        </div>
-      )}
 
       <div className="mt-4">
         <GoalEditor goals={goals} onChange={setGoals} />

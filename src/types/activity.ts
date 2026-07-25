@@ -6,4 +6,5 @@ export type Activity = {
   totalSec: number
   createdAt: number
   pinned: boolean
+  subtopicId: string | null
 }

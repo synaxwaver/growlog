@@ -56,7 +56,8 @@ function isActivity(value: unknown): value is Activity {
     typeof a.color === 'string' &&
     typeof a.totalSec === 'number' &&
     typeof a.createdAt === 'number' &&
-    typeof a.pinned === 'boolean'
+    typeof a.pinned === 'boolean' &&
+    (a.subtopicId === undefined || a.subtopicId === null || typeof a.subtopicId === 'string')
   )
 }
 
@@ -73,8 +74,7 @@ function isSession(value: unknown): value is Session {
     Array.isArray(s.goals) &&
     s.goals.every(isGoal) &&
     typeof s.note === 'string' &&
-    typeof s.date === 'string' &&
-    (s.topicIds === undefined || (Array.isArray(s.topicIds) && s.topicIds.every((t) => typeof t === 'string')))
+    typeof s.date === 'string'
   )
 }
 
@@ -101,10 +101,10 @@ export async function importData(file: File): Promise<ImportResult> {
     throw new Error(INVALID_FILE_MESSAGE)
   }
 
-  const normalizedSessions = sessions.map((s) => ({ ...s, topicIds: s.topicIds ?? [] }))
+  const normalizedActivities = activities.map((a) => ({ ...a, subtopicId: a.subtopicId ?? null }))
 
-  await db.activities.bulkPut(activities)
-  await db.sessions.bulkPut(normalizedSessions)
+  await db.activities.bulkPut(normalizedActivities)
+  await db.sessions.bulkPut(sessions)
 
   return { activitiesCount: activities.length, sessionsCount: sessions.length }
 }

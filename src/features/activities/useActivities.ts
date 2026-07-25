@@ -1,21 +1,7 @@
 import { useCallback, useEffect, useState } from 'react'
 import { db } from '../../db/db'
+import { getActivityDefaults } from './activityDefaults'
 import type { Activity } from '../../types/activity'
-
-const EMOJIS = ['🌱', '📚', '💻', '🎨', '🏃', '🧘', '🎸', '✍️', '🔬', '🌍']
-const COLORS = ['#10b981', '#3b82f6', '#f59e0b', '#ef4444', '#8b5cf6', '#ec4899', '#06b6d4', '#84cc16']
-
-function hashString(value: string): number {
-  let hash = 0
-  for (let i = 0; i < value.length; i++) {
-    hash = (hash * 31 + value.charCodeAt(i)) >>> 0
-  }
-  return hash
-}
-
-function pickForName<T>(name: string, options: T[]): T {
-  return options[hashString(name) % options.length]
-}
 
 export function useActivities() {
   const [activities, setActivities] = useState<Activity[]>([])
@@ -36,11 +22,11 @@ export function useActivities() {
       const activity: Activity = {
         id: crypto.randomUUID(),
         name,
-        emoji: pickForName(name, EMOJIS),
-        color: pickForName(name, COLORS),
+        ...getActivityDefaults(name),
         totalSec: 0,
         createdAt: Date.now(),
         pinned: false,
+        subtopicId: null,
       }
       await db.activities.add(activity)
       await reload()

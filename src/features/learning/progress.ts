@@ -1,23 +1,20 @@
+import type { Activity } from '../../types/activity'
 import type { Session } from '../../types/session'
-import type { Topic } from '../../types/topic'
+import type { Subtopic } from '../../types/subtopic'
 
-export type TopicProgress = {
-  actualSec: number
+export type SubtopicProgress = {
+  totalSec: number
   sessionCount: number
 }
 
-export function getTopicProgress(topicId: string, sessions: Session[]): TopicProgress {
-  let actualSec = 0
-  let sessionCount = 0
-
-  for (const session of sessions) {
-    if (session.topicIds.length > 0 && session.topicIds.includes(topicId)) {
-      actualSec += session.durationSec / session.topicIds.length
-      sessionCount += 1
-    }
-  }
-
-  return { actualSec, sessionCount }
+export function getSubtopicProgress(
+  subtopicActivities: Activity[],
+  sessions: Session[],
+): SubtopicProgress {
+  const activityIds = new Set(subtopicActivities.map((a) => a.id))
+  const totalSec = subtopicActivities.reduce((sum, a) => sum + a.totalSec, 0)
+  const sessionCount = sessions.filter((s) => s.activityId !== null && activityIds.has(s.activityId)).length
+  return { totalSec, sessionCount }
 }
 
 export type SubjectProgress = {
@@ -26,12 +23,11 @@ export type SubjectProgress = {
   totalCount: number
 }
 
-export function getSubjectProgress(topics: Topic[], sessions: Session[]): SubjectProgress {
-  const totalSec = topics.reduce(
-    (sum, topic) => sum + getTopicProgress(topic.id, sessions).actualSec,
-    0,
-  )
-  const doneCount = topics.filter((t) => t.status === 'done').length
-
-  return { totalSec, doneCount, totalCount: topics.length }
+export function getSubjectProgress(
+  subtopics: Subtopic[],
+  subtopicProgresses: SubtopicProgress[],
+): SubjectProgress {
+  const totalSec = subtopicProgresses.reduce((sum, p) => sum + p.totalSec, 0)
+  const doneCount = subtopics.filter((t) => t.status === 'done').length
+  return { totalSec, doneCount, totalCount: subtopics.length }
 }
