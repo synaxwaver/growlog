@@ -40,6 +40,7 @@ export function useActivities() {
         color: pickForName(name, COLORS),
         totalSec: 0,
         createdAt: Date.now(),
+        pinned: false,
       }
       await db.activities.add(activity)
       await reload()
@@ -48,5 +49,21 @@ export function useActivities() {
     [reload],
   )
 
-  return { activities, loading, createActivity }
+  const setPinned = useCallback(
+    async (id: string, pinned: boolean) => {
+      await db.activities.update(id, { pinned })
+      await reload()
+    },
+    [reload],
+  )
+
+  const deleteActivity = useCallback(
+    async (id: string) => {
+      await db.activities.delete(id)
+      await reload()
+    },
+    [reload],
+  )
+
+  return { activities, loading, createActivity, setPinned, deleteActivity }
 }

@@ -1,12 +1,15 @@
 import ActivityPicker from '../activities/ActivityPicker'
 import { useTimerStore } from './useTimerStore'
 
-export default function TimerControls() {
+type TimerControlsProps = {
+  onStop: () => void
+}
+
+export default function TimerControls({ onStop }: TimerControlsProps) {
   const timer = useTimerStore((s) => s.timer)
   const start = useTimerStore((s) => s.start)
   const pause = useTimerStore((s) => s.pause)
   const resume = useTimerStore((s) => s.resume)
-  const stop = useTimerStore((s) => s.stop)
 
   if (!timer) {
     return <ActivityPicker onSelect={(activity) => start(activity.name, activity.id)} />
@@ -23,7 +26,10 @@ export default function TimerControls() {
         {isRunning ? 'Пауза' : 'Продолжить'}
       </button>
       <button
-        onClick={stop}
+        onClick={() => {
+          pause()
+          onStop()
+        }}
         className="rounded-lg bg-rose-600 px-6 py-2 font-medium text-white transition-colors hover:bg-rose-700"
       >
         Стоп

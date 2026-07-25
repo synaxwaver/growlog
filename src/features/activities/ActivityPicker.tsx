@@ -7,8 +7,10 @@ type ActivityPickerProps = {
 }
 
 export default function ActivityPicker({ onSelect }: ActivityPickerProps) {
-  const { activities, loading, createActivity } = useActivities()
+  const { activities, loading, createActivity, deleteActivity } = useActivities()
   const [name, setName] = useState('')
+
+  const pinned = activities.filter((a) => a.pinned)
 
   const handleCreateOrSelect = async () => {
     const trimmed = name.trim()
@@ -18,20 +20,34 @@ export default function ActivityPicker({ onSelect }: ActivityPickerProps) {
     onSelect(activity)
   }
 
+  const handleDelete = (activity: Activity) => {
+    if (window.confirm(`Удалить активность «${activity.name}» с экрана таймера?`)) {
+      void deleteActivity(activity.id)
+    }
+  }
+
   return (
     <div className="flex w-full max-w-sm flex-col gap-4">
-      {!loading && activities.length > 0 && (
+      {!loading && pinned.length > 0 && (
         <div className="flex flex-wrap justify-center gap-2">
-          {activities.map((activity) => (
-            <button
+          {pinned.map((activity) => (
+            <div
               key={activity.id}
-              onClick={() => onSelect(activity)}
-              className="flex items-center gap-1.5 rounded-full border bg-white px-3 py-1.5 text-sm font-medium transition-colors hover:bg-neutral-50"
+              className="flex items-center gap-1.5 rounded-full border bg-white pl-3 pr-1.5 py-1.5 text-sm font-medium transition-colors hover:bg-neutral-50"
               style={{ borderColor: `${activity.color}55` }}
             >
-              <span>{activity.emoji}</span>
-              <span>{activity.name}</span>
-            </button>
+              <button onClick={() => onSelect(activity)} className="flex items-center gap-1.5">
+                <span>{activity.emoji}</span>
+                <span>{activity.name}</span>
+              </button>
+              <button
+                onClick={() => handleDelete(activity)}
+                aria-label={`Удалить ${activity.name}`}
+                className="rounded-full px-1.5 text-neutral-400 hover:bg-neutral-100 hover:text-rose-600"
+              >
+                ×
+              </button>
+            </div>
           ))}
         </div>
       )}

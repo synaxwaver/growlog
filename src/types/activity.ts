@@ -5,4 +5,5 @@ export type Activity = {
   color: string
   totalSec: number
   createdAt: number
+  pinned: boolean
 }
