@@ -41,5 +41,5 @@ export function useSessions() {
     [reload],
   )
 
-  return { sessions, loading, deleteSession, updateSession }
+  return { sessions, loading, deleteSession, updateSession, reload }
 }
