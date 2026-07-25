@@ -33,7 +33,7 @@ export default function ActivityPicker({ onSelect }: ActivityPickerProps) {
           {pinned.map((activity) => (
             <div
               key={activity.id}
-              className="flex items-center gap-1.5 rounded-full border bg-white pl-3 pr-1.5 py-1.5 text-sm font-medium transition-colors hover:bg-neutral-50"
+              className="flex items-center gap-1.5 rounded-full border bg-white py-1.5 pl-3 pr-1.5 text-sm font-medium transition-colors hover:bg-neutral-50 dark:bg-neutral-800 dark:hover:bg-neutral-700"
               style={{ borderColor: `${activity.color}55` }}
             >
               <button onClick={() => onSelect(activity)} className="flex items-center gap-1.5">
@@ -43,7 +43,7 @@ export default function ActivityPicker({ onSelect }: ActivityPickerProps) {
               <button
                 onClick={() => handleDelete(activity)}
                 aria-label={`Удалить ${activity.name}`}
-                className="rounded-full px-1.5 text-neutral-400 hover:bg-neutral-100 hover:text-rose-600"
+                className="rounded-full px-1.5 text-neutral-400 hover:bg-neutral-100 hover:text-rose-600 dark:hover:bg-neutral-700"
               >
                 ×
               </button>
@@ -52,13 +52,19 @@ export default function ActivityPicker({ onSelect }: ActivityPickerProps) {
         </div>
       )}
 
+      {!loading && pinned.length === 0 && (
+        <p className="text-center text-sm text-neutral-400 dark:text-neutral-500">
+          Ещё нет сохранённых активностей — начни с ввода ниже
+        </p>
+      )}
+
       <div className="flex flex-col gap-3">
         <input
           value={name}
           onChange={(e) => setName(e.target.value)}
           onKeyDown={(e) => e.key === 'Enter' && handleCreateOrSelect()}
           placeholder="Чем занимаешься?"
-          className="rounded-lg border border-neutral-300 px-4 py-2 text-center focus:border-emerald-500 focus:outline-none"
+          className="rounded-lg border border-neutral-300 bg-white px-4 py-2 text-center focus:border-emerald-500 focus:outline-none dark:border-neutral-700 dark:bg-neutral-900 dark:text-neutral-100 dark:placeholder-neutral-500"
         />
         <button
           onClick={handleCreateOrSelect}

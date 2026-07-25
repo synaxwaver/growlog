@@ -26,11 +26,17 @@ export default function GoalEditor({ goals, onChange }: GoalEditorProps) {
 
   return (
     <div className="flex flex-col gap-2">
-      <span className="text-sm font-medium text-neutral-600">Цели</span>
+      <span className="text-sm font-medium text-neutral-600 dark:text-neutral-400">Цели</span>
       {goals.map((goal) => (
         <label key={goal.id} className="flex items-center gap-2 text-sm">
           <input type="checkbox" checked={goal.done} onChange={() => toggleGoal(goal.id)} />
-          <span className={goal.done ? 'flex-1 text-neutral-400 line-through' : 'flex-1'}>
+          <span
+            className={
+              goal.done
+                ? 'flex-1 text-neutral-400 line-through dark:text-neutral-500'
+                : 'flex-1'
+            }
+          >
             {goal.text}
           </span>
           <button
@@ -48,11 +54,11 @@ export default function GoalEditor({ goals, onChange }: GoalEditorProps) {
           onChange={(e) => setDraft(e.target.value)}
           onKeyDown={(e) => e.key === 'Enter' && addGoal()}
           placeholder="Например: выучил циклы в Python"
-          className="flex-1 rounded-lg border border-neutral-300 px-3 py-1.5 text-sm focus:border-emerald-500 focus:outline-none"
+          className="flex-1 rounded-lg border border-neutral-300 px-3 py-1.5 text-sm focus:border-emerald-500 focus:outline-none dark:border-neutral-700 dark:bg-neutral-800 dark:text-neutral-100 dark:placeholder-neutral-500"
         />
         <button
           onClick={addGoal}
-          className="rounded-lg bg-neutral-100 px-3 py-1.5 text-sm font-medium hover:bg-neutral-200"
+          className="rounded-lg bg-neutral-100 px-3 py-1.5 text-sm font-medium hover:bg-neutral-200 dark:bg-neutral-800 dark:hover:bg-neutral-700"
         >
           +
         </button>
