@@ -1,6 +1,4 @@
-import { useEffect, useState } from 'react'
 import { useTimerStore } from './useTimerStore'
-import { getElapsedSec } from './timerMath'
 
 function formatDuration(totalSec: number): string {
   const sec = Math.floor(totalSec)
@@ -11,16 +9,12 @@ function formatDuration(totalSec: number): string {
   return h > 0 ? `${h}:${pad(m)}:${pad(s)}` : `${pad(m)}:${pad(s)}`
 }
 
-export default function TimerDisplay() {
-  const timer = useTimerStore((s) => s.timer)
-  const [elapsedSec, setElapsedSec] = useState(() => getElapsedSec(timer))
+type TimerDisplayProps = {
+  elapsedSec: number
+}
 
-  useEffect(() => {
-    setElapsedSec(getElapsedSec(timer))
-    if (!timer || timer.lastResumeAt === null) return
-    const id = setInterval(() => setElapsedSec(getElapsedSec(timer)), 1000)
-    return () => clearInterval(id)
-  }, [timer])
+export default function TimerDisplay({ elapsedSec }: TimerDisplayProps) {
+  const timer = useTimerStore((s) => s.timer)
 
   return (
     <div className="flex flex-col items-center gap-2">
